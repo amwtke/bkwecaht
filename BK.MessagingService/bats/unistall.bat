@@ -1,0 +1,1 @@
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe /u D:\WORK_SHOP\src\bk_wechat\dxw_wechat\BK.MessagingService\bin\Release\BK.MessagingService.exe

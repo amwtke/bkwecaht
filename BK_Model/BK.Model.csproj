@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B43A53A6-832E-4CB7-A859-E4B5A655EF8F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BK.Model</RootNamespace>
+    <AssemblyName>BK.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.1.5.1\lib\net45\Elasticsearch.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Data.Entity.Design.Extensibility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.1.5.1\lib\net45\Nest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.1.0.488\lib\net45\StackExchange.Redis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Entity.Design" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\Att\BKConfigAttAttribute.cs" />
+    <Compile Include="Configuration\ElasticSearch\EKESConfig.cs" />
+    <Compile Include="Configuration\ElasticSearch\IESIndexInterface.cs" />
+    <Compile Include="Configuration\ElasticSearch\ComplexLocationConfig.cs" />
+    <Compile Include="Configuration\ElasticSearch\LocationConfig.cs" />
+    <Compile Include="Configuration\ElasticSearch\ProfessorESConfig.cs" />
+    <Compile Include="Configuration\IConfigModel.cs" />
+    <Compile Include="Configuration\ElasticSearch\LogConfig.cs" />
+    <Compile Include="Configuration\MQ\EKCommentMQConfig.cs" />
+    <Compile Include="Configuration\MQ\EmailMQConfig.cs" />
+    <Compile Include="Configuration\MQ\Interface\Enumber.cs" />
+    <Compile Include="Configuration\MQ\Interface\IMQConfig.cs" />
+    <Compile Include="Configuration\MQ\LogMQConfig.cs" />
+    <Compile Include="Configuration\MQ\SMMQConfig.cs" />
+    <Compile Include="Configuration\MQ\TestMQ.cs" />
+    <Compile Include="Configuration\MQ\NoticeMQConfig.cs" />
+    <Compile Include="Configuration\MQ\WeChatMessageMQ.cs" />
+    <Compile Include="Configuration\PaaS\SendCloudConfig.cs" />
+    <Compile Include="Configuration\Redis\RedisConfigBase.cs" />
+    <Compile Include="Configuration\Redis\WeChatRedisConfig.cs" />
+    <Compile Include="Configuration\PaaS\QiniuConfig.cs" />
+    <Compile Include="Configuration\User\UserBehaviorConfig.cs" />
+    <Compile Include="Configuration\WeChat\WeixinConfig.cs" />
+    <Compile Include="DB\AcademicCircleTopic.cs" />
+    <Compile Include="DB\AcademicCircleTopicFavorite.cs" />
+    <Compile Include="DB\AcademicCircleTopicNews.cs" />
+    <Compile Include="DB\AcademicCircleTopicPraise.cs" />
+    <Compile Include="DB\Administrator.cs" />
+    <Compile Include="DB\ArticleNews.cs" />
+    <Compile Include="DB\article_download.cs" />
+    <Compile Include="DB\article_praise.cs" />
+    <Compile Include="DB\article_reader.cs" />
+    <Compile Include="DB\article_request.cs" />
+    <Compile Include="DB\Attentions.cs" />
+    <Compile Include="DB\BaseInfo.cs" />
+    <Compile Include="DB\BKConfig.cs" />
+    <Compile Include="DB\businessrecruit_info.cs" />
+    <Compile Include="DB\City.cs" />
+    <Compile Include="DB\Conference.cs" />
+    <Compile Include="DB\ConferenceParticipant.cs" />
+    <Compile Include="DB\ConferenceRegister.cs" />
+    <Compile Include="DB\ConferenceResearchField.cs" />
+    <Compile Include="DB\Config.cs" />
+    <Compile Include="DB\CooperativeProject.cs" />
+    <Compile Include="DB\CooperativeProjectNews.cs" />
+    <Compile Include="DB\CooperativeProjectParticipant.cs" />
+    <Compile Include="DB\CooperativeProjectPraise.cs" />
+    <Compile Include="DB\CooperativeProjectResearchField.cs" />
+    <Compile Include="DB\CopUserEquipment.cs" />
+    <Compile Include="DB\CopUserExperiment.cs" />
+    <Compile Include="DB\Country.cs" />
+    <Compile Include="DB\ekevent.cs" />
+    <Compile Include="DB\ekevent_register.cs" />
+    <Compile Include="DB\EKToday.cs" />
+    <Compile Include="DB\EKTodayResearchField.cs" />
+    <Compile Include="DB\ektoday_type.cs" />
+    <Compile Include="DB\EquipmentName.cs" />
+    <Compile Include="DB\ExperimentName.cs" />
+    <Compile Include="DB\ExperimentProject.cs" />
+    <Compile Include="DB\ExperimentSolution.cs" />
+    <Compile Include="DB\FriendLink.cs" />
+    <Compile Include="DB\GroupBase.cs" />
+    <Compile Include="DB\GroupNews.cs" />
+    <Compile Include="DB\group_article.cs" />
+    <Compile Include="DB\group_article_favorite.cs" />
+    <Compile Include="DB\group_article_praise.cs" />
+    <Compile Include="DB\LeaveAMessage.cs" />
+    <Compile Include="DB\login_recommend.cs" />
+    <Compile Include="DB\LogModifyEmail.cs" />
+    <Compile Include="DB\Message.cs" />
+    <Compile Include="DB\MessageSetting.cs" />
+    <Compile Include="DB\message_board.cs" />
+    <Compile Include="DB\Messaging\EKCommentLog.cs" />
+    <Compile Include="DB\Messaging\WeChatMessage.cs" />
+    <Compile Include="DB\News.cs" />
+    <Compile Include="DB\OtherExperiments.cs" />
+    <Compile Include="DB\Partial\DBModelBase.cs" />
+    <Compile Include="DB\Partial\IDBModelWithID.cs" />
+    <Compile Include="DB\Partial\UserAcademic.cs" />
+    <Compile Include="DB\Partial\UserArticle.cs" />
+    <Compile Include="DB\Partial\UserAwards.cs" />
+    <Compile Include="DB\Partial\UserCourse.cs" />
+    <Compile Include="DB\Partial\UserEducation.cs" />
+    <Compile Include="DB\Partial\UserExperience.cs" />
+    <Compile Include="DB\Partial\Message.cs" />
+    <Compile Include="DB\Partial\UserPatent.cs" />
+    <Compile Include="DB\Partial\UserSkill.cs" />
+    <Compile Include="DB\postdoctor_info.cs" />
+    <Compile Include="DB\pre_register.cs" />
+    <Compile Include="DB\ProjectComment.cs" />
+    <Compile Include="DB\Province.cs" />
+    <Compile Include="DB\qa_answer.cs" />
+    <Compile Include="DB\qa_favorite_question.cs" />
+    <Compile Include="DB\qa_question.cs" />
+    <Compile Include="DB\Recruit.cs" />
+    <Compile Include="DB\RecruitAdvantage.cs" />
+    <Compile Include="DB\RecruitAdvantageInfo.cs" />
+    <Compile Include="DB\RecruitResearchField.cs" />
+    <Compile Include="DB\RecruitSignUp.cs" />
+    <Compile Include="DB\recruit_student.cs" />
+    <Compile Include="DB\ResearchField.cs" />
+    <Compile Include="DB\ShieldingText.cs" />
+    <Compile Include="DB\suggestion_register.cs" />
+    <Compile Include="DB\T_UnivsDep.cs" />
+    <Compile Include="DB\Univs.cs" />
+    <Compile Include="DB\UserAcademic.cs" />
+    <Compile Include="DB\UserAcquaintance.cs" />
+    <Compile Include="DB\UserArticle.cs" />
+    <Compile Include="DB\UserCourse.cs" />
+    <Compile Include="DB\UserAwards.cs" />
+    <Compile Include="DB\UserContacts.cs" />
+    <Compile Include="DB\UserEducation.cs" />
+    <Compile Include="DB\UserExperience.cs" />
+    <Compile Include="DB\UserGroup.cs" />
+    <Compile Include="DB\UserInfo.cs" />
+    <Compile Include="DB\UserInvitation.cs" />
+    <Compile Include="DB\UserNews.cs" />
+    <Compile Include="DB\UserSkill.cs" />
+    <Compile Include="DB\UserPatent.cs" />
+    <Compile Include="DB\user_favorite.cs" />
+    <Compile Include="DB\VisitBetweenUser.cs" />
+    <Compile Include="DB\wechat_oa.cs" />
+    <Compile Include="Index\BizIndex.cs" />
+    <Compile Include="Index\EKArticle.cs" />
+    <Compile Include="Index\ComplexLocation.cs" />
+    <Compile Include="Index\Location.cs" />
+    <Compile Include="Index\LogEvent.cs" />
+    <Compile Include="Index\Papers.cs" />
+    <Compile Include="Index\Professor.cs" />
+    <Compile Include="MQ\LogMQObject.cs" />
+    <Compile Include="MQ\EKCommentMQObject.cs" />
+    <Compile Include="MQ\NoticeMQ.cs" />
+    <Compile Include="MQ\ChatMessageMQ.cs" />
+    <Compile Include="MQ\MessageBase.cs" />
+    <Compile Include="MQ\MsgType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DB\Partial\UserInfo.cs" />
+    <Compile Include="Redis\att\CustomAtts\lists\TestObject.cs" />
+    <Compile Include="Redis\att\CustomAtts\sets\TesterOpenIdSetAttribute.cs" />
+    <Compile Include="Redis\att\CustomAtts\sets\TestObjectSets.cs" />
+    <Compile Include="Redis\att\CustomAtts\sets\UserInfoSet.cs" />
+    <Compile Include="Redis\att\CustomAtts\zsets\TestObjectZset.cs" />
+    <Compile Include="Redis\att\RedisAtt.cs" />
+    <Compile Include="Redis\Objects\EK\EKTodayRedis.cs" />
+    <Compile Include="Redis\Objects\Helper\ObjectHelper.cs" />
+    <Compile Include="Redis\Objects\Ids\OpenIdToUuidRedis.cs" />
+    <Compile Include="Redis\Objects\Messaging\EKCommentRedis.cs" />
+    <Compile Include="Redis\Objects\Messaging\PaperCommentRedis.cs" />
+    <Compile Include="Redis\Objects\Messaging\WeChatMessageRedis.cs" />
+    <Compile Include="Redis\Objects\Messaging\WeChatSessionHash.cs" />
+    <Compile Include="Redis\Objects\Notice\WeChatNoticeRedis.cs" />
+    <Compile Include="Redis\Objects\paper\PaperRedis.cs" />
+    <Compile Include="Redis\Objects\Tester\TesterRedis.cs" />
+    <Compile Include="Redis\Objects\TestObject.cs" />
+    <Compile Include="Redis\Objects\UserBehavior\NameCardRedis.cs" />
+    <Compile Include="Redis\Objects\UserBehavior\UserLoginRedis.cs" />
+    <Compile Include="Redis\Objects\UserBehavior\Userinfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Redis\ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

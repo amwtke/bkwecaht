@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E8A94302-D1B3-488D-8A6C-50D5EBF45372}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BK.CommonLib</RootNamespace>
+    <AssemblyName>BK.CommonLib</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CodeScales.Http, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\CodeScales.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.1.5.1\lib\net45\Elasticsearch.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="log4stash, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\log4stash.dll</HintPath>
+    </Reference>
+    <Reference Include="Nest, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\NEST.1.5.1\lib\net45\Nest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RabbitMQ.Client, Version=3.5.6.0, Culture=neutral, PublicKeyToken=89e7d7c5feba84ce, processorArchitecture=MSIL">
+      <HintPath>..\packages\RabbitMQ.Client.3.5.6\lib\net40\RabbitMQ.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StackExchange.Redis, Version=1.0.316.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.1.0.488\lib\net45\StackExchange.Redis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DB\Context\BKDBContext.cs" />
+    <Compile Include="DB\Context\ChatMessageLogContext.cs" />
+    <Compile Include="DB\Redis\ops\NoticeRedisOp.cs" />
+    <Compile Include="DB\Redis\ops\MessageRedisOp.cs" />
+    <Compile Include="DB\Redis\ops\NameCardAccessCountOP.cs" />
+    <Compile Include="DB\Redis\ops\OpenIdToUserUUID.cs" />
+    <Compile Include="DB\Redis\ops\UserLoginBehaviorOp.cs" />
+    <Compile Include="DB\Redis\RedisKeyMap.cs" />
+    <Compile Include="DB\Redis\RedisManager.cs" />
+    <Compile Include="DB\Redis\RedisManager2.cs" />
+    <Compile Include="DB\Repositorys\NoticeRepository.cs" />
+    <Compile Include="DB\Repositorys\MessageRepository.cs" />
+    <Compile Include="DB\Repositorys\helper\RepositoryHelper.cs" />
+    <Compile Include="DB\Repositorys\SystemRepository.cs" />
+    <Compile Include="DB\Repositorys\UserRepository.cs" />
+    <Compile Include="ElasticSearch\EKArticleManager.cs" />
+    <Compile Include="ElasticSearch\ESHelper.cs" />
+    <Compile Include="ElasticSearch\ComplexLocationManager.cs" />
+    <Compile Include="ElasticSearch\LocationManager.cs" />
+    <Compile Include="ElasticSearch\LogESManager.cs" />
+    <Compile Include="ElasticSearch\PaperManager.cs" />
+    <Compile Include="ElasticSearch\ProfessorManager.cs" />
+    <Compile Include="Log\BKLogger.cs" />
+    <Compile Include="Log\LogManager.cs" />
+    <Compile Include="MQ\EKCommentMessageMQOp.cs" />
+    <Compile Include="MQ\LogMQOP.cs" />
+    <Compile Include="MQ\MQManager.cs" />
+    <Compile Include="MQ\PaperCommentMQOp.cs" />
+    <Compile Include="MQ\WeChatNoticeMQ.cs" />
+    <Compile Include="MQ\WeChatMessagMQ.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DB\Context\UserInfoContext.cs" />
+    <Compile Include="Qiniu\QiniuHelper.cs" />
+    <Compile Include="SC\EDM.cs" />
+    <Compile Include="Util\AsyncHelper.cs" />
+    <Compile Include="Util\BinarySerializationHelper.cs" />
+    <Compile Include="Util\Cache\LRUCache.cs" />
+    <Compile Include="Util\Cache\RWLock.cs" />
+    <Compile Include="Util\Cache\UserCache.cs" />
+    <Compile Include="Util\Encryption.cs" />
+    <Compile Include="Util\CommonHelper.cs" />
+    <Compile Include="Util\GeographyHelper.cs" />
+    <Compile Include="Util\HttpUtil\Get.cs" />
+    <Compile Include="Util\HttpUtil\HttpRequest.cs" />
+    <Compile Include="Util\HttpUtil\Post.cs" />
+    <Compile Include="Weixin\Message\Enum.cs" />
+    <Compile Include="Weixin\Message\TemplateMessageObjects\MessageBase.cs" />
+    <Compile Include="Weixin\Message\TemplateMessageObjects\NotifyMessageObject.cs" />
+    <Compile Include="Weixin\Message\TemplateMsgHelper.cs" />
+    <Compile Include="Weixin\Token\WXTokenHelper.cs" />
+    <Compile Include="Weixin\User\WXAuthHelper.cs" />
+    <Compile Include="Util\WebApiHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ElasticSearch\Readme.txt" />
+    <Content Include="Lib\CodeScales.Http.dll" />
+    <Content Include="MQ\README.txt" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Lib\log4net.dll" />
+    <Content Include="Lib\log4stash.dll" />
+    <Content Include="log4net.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BK.Configuration\BK.Configuration.csproj">
+      <Project>{1533bc95-5e20-4bf3-b1c8-2bd74f7514ad}</Project>
+      <Name>BK.Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BK_Model\BK.Model.csproj">
+      <Project>{b43a53a6-832e-4cb7-a859-e4b5a655ef8f}</Project>
+      <Name>BK.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Qiniu\Qiniu.csproj">
+      <Project>{ad4ea9d1-11c2-4bf6-8a06-72a966bc1b80}</Project>
+      <Name>Qiniu</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Senparc.Weixin.MP\Senparc.Weixin.MP\Senparc.Weixin.MP.csproj">
+      <Project>{1d815fbf-451c-4e23-939c-cb80172f445c}</Project>
+      <Name>Senparc.Weixin.MP</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Senparc.Weixin.Open\Senparc.Weixin.Open\Senparc.Weixin.Open.csproj">
+      <Project>{54732c3d-b673-4bbf-b0c3-6432e3d6f522}</Project>
+      <Name>Senparc.Weixin.Open</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Senparc.Weixin\Senparc.Weixin.csproj">
+      <Project>{814092cd-9cd0-4fb7-91e8-d147f476f1fb}</Project>
+      <Name>Senparc.Weixin</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

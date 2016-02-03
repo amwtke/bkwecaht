@@ -1,0 +1,21 @@
+﻿修改菜单：
+POST： https://api.weixin.qq.com/cgi-bin/menu/create?access_token=B6JDtlyQSO2GmO7ORWcY2WXCDiTizmmZp_kjdeKVpOGF4aczpjay-lGhk_jC0HkQN1L9Q2lrW7BMd--zwKZNh936xNWPdQ8BLsaH3qLaM4YURUjAHAZWZ
+ {
+     "button":[
+      {
+          "type":"click",
+          "name":"赞一下我们",
+          "key":"Click_Zan"
+      },
+     {	
+          "type":"view",
+          "name":"登录",
+          "key":"Click_Login",
+          "url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9a12c27c0a4a3d3c&redirect_uri=http%3a%2f%2fwechat.51science.cn%2fwxcallback&response_type=code&scope=snsapi_userinfo&state=bktest#wechat_redirect"
+      },
+      {
+          "type":"location_select",
+          "name":"我的位置",
+          "key":"Click_Location"
+      }]
+ }
