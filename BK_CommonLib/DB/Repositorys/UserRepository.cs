@@ -60,6 +60,8 @@ namespace BK.CommonLib.DB.Repositorys
             if(_userinfoCache.TryGetValue(uuid, out u))
                 return u;
             u = await context.UserInfo.FindAsync(uuid);
+            if (u == null)
+                return u;
             await context.Entry(u).Reference(r => r.ResearchField).LoadAsync();
             _userinfoCache[uuid] = u;
             return u;
@@ -71,6 +73,8 @@ namespace BK.CommonLib.DB.Repositorys
             if (_userinfoCache.TryGetValue(uuid, out u))
                 return u;
             u = context.UserInfo.Find(uuid);
+            if (u == null)
+                return u;
             context.Entry(u).Reference(r => r.ResearchField).Load();
             _userinfoCache[uuid] = u;
             return u;
@@ -78,34 +82,19 @@ namespace BK.CommonLib.DB.Repositorys
 
         public async Task<UserInfo> GetUserInfoByAccountPassword(string account, string password)
         {
-            //List<UserInfo> result = context.UserInfoes.Where(a => a.AccountEmail == account && a.Password == password).ToList();
-            List<UserInfo> result = await (from ui in context.UserInfo
+            UserInfo result = await (from ui in context.UserInfo
                                            where ui.AccountEmail == account && ui.Password == password
-                                           select ui).ToListAsync();
-            if(result.Count > 0)
-            {
-                return result[0];
-            }
-            else
-            {
-                return null;
-            }
+                                           select ui).FirstOrDefaultAsync();
+            return result;
         }
 
 
         public async Task<UserInfo> GetUserInfoByAccount(string account)
         {
-            List<UserInfo> result = await (from ui in context.UserInfo
-                                           where ui.AccountEmail == account
-                                           select ui).ToListAsync();
-            if(result.Count > 0)
-            {
-                return result[0];
-            }
-            else
-            {
-                return null;
-            }
+            UserInfo result = await (from ui in context.UserInfo
+                                     where ui.AccountEmail == account
+                                     select ui).FirstOrDefaultAsync();
+            return result;
         }
         /// <summary>
         /// 根据用户的openid是否存在
@@ -148,6 +137,7 @@ namespace BK.CommonLib.DB.Repositorys
                     return false;
             }
         }
+
         public async Task<bool> SaveUserInfo(UserInfo userinfo)
         {
             //新加入
@@ -495,7 +485,7 @@ namespace BK.CommonLib.DB.Repositorys
             if(uuid != Guid.Empty)
                 result = await (from uc in context.VisitBetweenUser
                                 where uc.UserGuest_uuid == uuid
-                                select uc.UserHost_uuid).Distinct().CountAsync();
+                                select uc.UserHost_userinfo).Distinct().CountAsync();
             return result;
         }
 
@@ -536,7 +526,7 @@ namespace BK.CommonLib.DB.Repositorys
             if(uuid != Guid.Empty)
                 result = await (from uc in context.VisitBetweenUser
                                 where uc.UserHost_uuid == uuid
-                                select uc.UserGuest_uuid).Distinct().CountAsync();
+                                select uc.UserGuest_userinfo).Distinct().CountAsync();
             return result;
         }
 
@@ -1047,6 +1037,24 @@ namespace BK.CommonLib.DB.Repositorys
             {
                 context.EKToday.Add(input);
                 await context.SaveChangesAsync();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteEKToday(long itemId)
+        {
+            try
+            {
+                EKToday obj = await context.EKToday.FindAsync(itemId);
+                if(obj != null)
+                {
+                    obj.IsPublic = false;
+                    await context.SaveChangesAsync();
+                }
                 return true;
             }
             catch(Exception ex)

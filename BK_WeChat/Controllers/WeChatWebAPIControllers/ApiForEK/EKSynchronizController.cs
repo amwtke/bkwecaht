@@ -84,5 +84,27 @@ namespace BK.WeChat.Controllers
                 }
             }
         }
+
+        [Route("apiForEK/EKToday/DeleteArticle")]
+        public async Task<HttpResponseMessage> PostDeleteEKTodayArticleForEK([FromBody]DualParameter postParameter)
+        {
+            long itemId = postParameter.itemId;
+            if(itemId==0)
+            {
+                return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.InvalidArguments);
+            }
+            using(UserRepository userRepository = new UserRepository())
+            {
+                bool result = await userRepository.DeleteEKToday(itemId);
+                if(result)
+                {
+                    return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.Success);
+                }
+                else
+                {
+                    return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.Fail);
+                }
+            }
+        }
     }
 }

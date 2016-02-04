@@ -69,8 +69,11 @@ namespace BK.CommonLib.ElasticSearch
             using (UserRepository repo = new UserRepository())
             {
                 var userinfo = repo.GetUserInfoByUuid_TB(uuid);
-                if (userinfo.ResearchFieldId == null || userinfo.IsBusiness != 0)
+                if (userinfo.IsBusiness != 0)
                     return null;
+
+                if (userinfo.ResearchFieldId == null)
+                    userinfo.ResearchFieldId = 0;
 
                 UserEducation userEducation = new UserEducation();
                 userEducation.AccountEmail_uuid = uuid;

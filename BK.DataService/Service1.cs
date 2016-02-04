@@ -272,7 +272,7 @@ namespace BK.DataService
             {
                 Dictionary<long, int> updateReadDic = new Dictionary<long, int>();
                 Dictionary<long, int> updateZanDic = new Dictionary<long, int>();
-                foreach (var v in r.GetAllEKToday())
+                foreach(var v in r.GetAllEKToday().Where(ekt => ekt.IsPublic == true))
                 {
                     var index = EKArticleManager.CopyFromDB(v);
                     EKArticleManager.AddOrUpdate(index);
@@ -293,7 +293,7 @@ namespace BK.DataService
                     //更新zanshu
                     double zanscore = redis.GetScore<EKTodayRedis, EKZanCountZsetAttribute>(v.ID.ToString());
                     int zrCount = Convert.ToInt32(zanscore);
-                    if (zrCount < v.HitPoint)
+                    if(zrCount < v.HitPoint)
                     {
                         EKArticleManager.SetZan(v.ID, v.HitPoint.Value);
                     }

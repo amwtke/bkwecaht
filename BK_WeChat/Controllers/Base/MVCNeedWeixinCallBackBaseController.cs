@@ -121,7 +121,6 @@ namespace BK.WeChat.Controllers.Base
                     //如果需要绑定用户信息则，此处存储用户信息
                     return await WeChatCallBackControllerHelper.SaveOAuthUserInfoToRedis(user);
                 });
-
                 //再次判断是否需要绑定
 
                 //存入cookie供前端代码调用
@@ -133,6 +132,8 @@ namespace BK.WeChat.Controllers.Base
                 //可以通过wechat.51science.cn/weixinapi/addtester/?openid=xxx来添加
                 //wechat.51science.cn/weixinapi/rmtester/?openid=xxx删除
                 bool isToRegister = !Isbinded || await WXAuthHelper.IsTester(openid);
+                //BKLogger.LogInfoAsync(typeof(MVCNeedWeixinCallBackBaseController), "isToRegister:"+isToRegister);
+                //BKLogger.LogInfoAsync(typeof(MVCNeedWeixinCallBackBaseController), "Isbinded:" + Isbinded);
                 if (!isToRegister)
                 {
                     //记录用户行为
@@ -171,7 +172,7 @@ namespace BK.WeChat.Controllers.Base
             }
             catch (Exception ex)
             {
-                LogHelper.LogErrorAsync(typeof(MVCNeedWeixinCallBackBaseController), ex);
+                BKLogger.LogErrorAsync(typeof(MVCNeedWeixinCallBackBaseController), ex);
                 return Content(ex.ToString());
             }
         }
