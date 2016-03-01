@@ -319,7 +319,7 @@ namespace BK.WeChat.Controllers
         [HttpGet]
         public async Task<bool> AddComplexLocation(string id, double lat, double lon)
         {
-            return await ComplexLocationManager.AddOrUpdateLocationAsync(id, lat, lon);
+            return ComplexLocationManager.AddOrUpdateLocation(id, lat, lon);
         }
 
         [Route("updatecomplexlocation")]
@@ -515,14 +515,15 @@ namespace BK.WeChat.Controllers
 
         [Route("testcopypaper")]
         [HttpGet]
-        public async Task<PapersIndex> TestCopyFromUserArticle(long id)
+        public async Task<bool> TestCopyFromUserArticle(long id)
         {
             UserArticle dba = null;
             using (UserRepository repo = new UserRepository())
             {
                 dba = await repo.GetPaperById(id);
+            
+            return PaperManager.AddOrUpdate(PaperManager.CopyFromDB(dba));
             }
-            return PaperManager.CopyFromDB(dba);
         }
 
         #endregion

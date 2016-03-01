@@ -119,10 +119,11 @@ namespace BK.CommonLib.DB.Repositorys
 
         public async Task<List<T_UnivsDep>> GetFacultyNameByUnivsID(string name)
         {
+            int univId = Convert.ToInt32(name);
             List<T_UnivsDep> result = null;
             if(!string.IsNullOrEmpty(name))
                 result = await (from u in context.T_UnivsDep
-                                where u.UnivsID == name
+                                where u.UnivsID == univId
                                 select u).ToListAsync();
             return result;
         }

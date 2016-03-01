@@ -124,7 +124,10 @@ namespace BK.CommonLib.ElasticSearch
         public static async Task<List<EKIndex>> GetArticlesAsync(int pageIndex, int pagesize)
         {
             int from = pageIndex * pagesize;
-            var result = await _client.SearchAsync<EKIndex>(s => s.SortDescending("PublicDate").Skip(from).Size(pagesize));
+
+            var result = await _client.SearchAsync<EKIndex>(s => s.Filter(f => f.And(new FilterContainer[]{new FilterDescriptor<EKIndex>().Term("IsPublic",true)
+                                                                                                        ,new FilterDescriptor<EKIndex>().Term("IsExotic", true) }))
+                                                                .SortDescending("PublicDate").Skip(from).Size(pagesize));
             if(result!=null && result.Total>0)
             {
                 List<EKIndex> list = new List<EKIndex>();

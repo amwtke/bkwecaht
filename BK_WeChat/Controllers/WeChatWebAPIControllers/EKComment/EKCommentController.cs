@@ -213,7 +213,7 @@ namespace BK.WeChat.Controllers.EKComment
                 {
                     foreach(var v in zans)
                     {
-                        UserInfo tmp = await userR.GetUserInfoByUuid(Guid.Parse(v.Key));
+                        UserInfo tmp = await userR.GetUserInfoByUuidAsync(Guid.Parse(v.Key));
                         ret.Add(tmp);
                     }
                 }
@@ -250,7 +250,7 @@ namespace BK.WeChat.Controllers.EKComment
                 {
                     foreach (var v in zans)
                     {
-                        UserInfo tmp = await userR.GetUserInfoByUuid(Guid.Parse(v.Key));
+                        UserInfo tmp = await userR.GetUserInfoByUuidAsync(Guid.Parse(v.Key));
                         ret.Add(tmp);
                     }
                 }

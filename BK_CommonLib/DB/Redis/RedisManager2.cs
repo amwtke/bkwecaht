@@ -1118,7 +1118,7 @@ namespace BK.CommonLib.DB.Redis
                 throw new Exception("没有找到zsetName");
             return GetRangeByScoreWithScore<RedisObject>(zsetName, offSet, top, orderWay, Scorefrom, Scoreto);
         }
-        #endregion
+
 
 
         /// <summary>
@@ -1168,7 +1168,7 @@ namespace BK.CommonLib.DB.Redis
                 throw new Exception("没有找到zsetName");
             return GetRangeByScore<RedisObject>(zsetName, offSet, top, orderWay, Scorefrom, Scoreto);
         }
-
+        #endregion
         #region 删除member
         public async Task<bool> DeleteKeyZsetAsync<RedisObject, ZsetAtt>(string key) where RedisObject : class, new()
         {

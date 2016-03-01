@@ -10,10 +10,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using BK.WeChat.Controllers.WeChatWebAPIControllerHelper;
 using BK.CommonLib.ElasticSearch;
+using BK.CommonLib.Log;
 
 namespace BK.WeChat.Controllers
 {
-    public class LoginController: ApiController
+    public class LoginController : ApiController
     {
         UserInfo userinfo;
         /// <summary>
@@ -37,38 +38,59 @@ namespace BK.WeChat.Controllers
             string account = userlogin.account;
             string password = userlogin.password;
             string openid = userlogin.openID;
-            if(string.IsNullOrEmpty(account) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(openid))
+            if (string.IsNullOrEmpty(account) || string.IsNullOrEmpty(password) || string.IsNullOrEmpty(openid))
                 return WebApiHelper.HttpRMtoJson(userlogin.jsonpCallback, null, HttpStatusCode.OK, customStatus.InvalidArguments);
             //13163331326@phone.51science.cn
-            if(!account.Contains("@"))
+            if (!account.Contains("@"))
                 account += "@phone.51science.cn";
             password = Encryption.EncryptMD5(userlogin.password);
-            using(UserRepository userRepository = new UserRepository())
+            using (UserRepository userRepository = new UserRepository())
             {
                 userinfo = await userRepository.GetUserInfoByAccountPassword(account, password);
-                if(userinfo != null)
+                if (userinfo != null)
                 {
-                    if(userinfo.Status == 1)
+                    if (userinfo.Status == 1)
                         return WebApiHelper.HttpRMtoJson(userlogin.jsonpCallback, userinfo, HttpStatusCode.OK, customStatus.Forbidden);
                     else
                     {
-                        if(userinfo.IsLogin == 0)
+                        if (userinfo.IsLogin == 0)
                         {
                             userinfo.IsLogin = 1;
                             userinfo.LastLogin = DateTime.MinValue;
                         }
                         var userinfoRedis = await UserInfoControllerHelper.GetUserInfoRedisByOpenid(openid);
 
-                        if(await UserInfoControllerHelper.CheckUserInfoPhoto(userinfo, userinfoRedis))
+                        if (await UserInfoControllerHelper.CheckUserInfoPhoto(userinfo, userinfoRedis))
                         {
                             //photo已更新为微信头像
                         }
-                        if(await ComplexLocationManager.UpdateComplexLocationAsync(openid, userinfo.IsBusiness ?? 0, int.Parse(userinfo.Gender), userinfo.ResearchFieldId ?? 0))
+                        int clIsBusiness = userinfo.IsBusiness ?? 0;
+                        //性别取自微信
+                        int clGender = string.IsNullOrEmpty(userinfoRedis.Sex) ? 0 : int.Parse(userinfoRedis.Sex);
+                        long clResearchFieldID = userinfo.ResearchFieldId ?? 0;
+                        if (await ComplexLocationManager.UpdateComplexLocationAsync(openid, clIsBusiness, clGender, clResearchFieldID))
                         {
                             //位置索引添加供筛选字段
+                            try
+                            {
+                                BKLogger.LogInfoAsync(typeof(LoginController), "记录位置信息："
+                                    + userinfo.Name
+                                    + userinfo.uuid.ToString()
+                                    + userinfo.IsBusiness 
+                                    + userinfo.Gender 
+                                    + userinfo.ResearchFieldId + " | "
+                                    + clIsBusiness + clGender + clResearchFieldID);
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
                         }
-                        if(await userRepository.SaveUserOpenid(userinfo.uuid, openid, userinfoRedis.Unionid))
+                        if (await userRepository.SaveUserOpenid(userinfo.uuid, openid, userinfoRedis.Unionid))
+                        {
+                            userinfo.Gender = userinfoRedis.Sex;
                             return WebApiHelper.HttpRMtoJson(userlogin.jsonpCallback, userinfo, HttpStatusCode.OK, customStatus.Success);
+                        }
                         else
                             return WebApiHelper.HttpRMtoJson(userlogin.jsonpCallback, userinfo, HttpStatusCode.OK, customStatus.Fail);
 
@@ -77,9 +99,8 @@ namespace BK.WeChat.Controllers
                 }
                 else
                 {
-
                     userinfo = await userRepository.GetUserInfoByAccount(account);
-                    if(userinfo != null)
+                    if (userinfo != null)
                         return WebApiHelper.HttpRMtoJson(userlogin.jsonpCallback, null, HttpStatusCode.OK, customStatus.WrongPassowrd);
                     else
                         return WebApiHelper.HttpRMtoJson(userlogin.jsonpCallback, null, HttpStatusCode.OK, customStatus.NotFound);
@@ -107,7 +128,7 @@ namespace BK.WeChat.Controllers
             //对应openid从redis取出验证码 若没有 生成验证码 存入redis **20分钟有效
             var userinfoRedis = await UserInfoControllerHelper.GetUserInfoRedisByOpenid(openid);
             //注册测试用的白名单
-            if(string.IsNullOrEmpty(userinfoRedis.PreRegisterValidationCode))
+            if (string.IsNullOrEmpty(userinfoRedis.PreRegisterValidationCode))
             {
                 await UserInfoControllerHelper.SaveUserPreRegisterToRedis(openid, preRegisterValidationCode: validationCode);
             }
@@ -116,27 +137,29 @@ namespace BK.WeChat.Controllers
                 validationCode = userinfoRedis.PreRegisterValidationCode;
             }
 
-            if(string.IsNullOrEmpty(sNewAccount) || string.IsNullOrEmpty(openid))
+            if (string.IsNullOrEmpty(sNewAccount) || string.IsNullOrEmpty(openid))
             {
-                return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.InvalidArguments);
+                return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.InvalidArguments);
             }
 
-            if(!sNewAccount.Contains("@"))
+            if (!sNewAccount.Contains("@"))
                 sNewAccount += "@phone.51science.cn";
-            using(UserRepository userRepository = new UserRepository())
+            using (UserRepository userRepository = new UserRepository())
             {
                 userinfo = await userRepository.GetUserInfoByAccount(sNewAccount);
             }
-            if(userinfo == null)
-                return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.NotFound);
+            if (userinfo == null)
+                return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.NotFound);
             else
             {
-                WebApiHelper.SendValidStringSMS(validationCode, sNewAccount.Substring(0, 11));
-
+                if (sNewAccount.Contains("@phone.51science.cn"))
+                    WebApiHelper.SendValidStringSMS(validationCode, sNewAccount.Substring(0, 11));
+                else
+                    WebApiHelper.SendValidStringEmail(validationCode, sNewAccount, userinfo.Name);
                 //向redis里存入手机号 防止故意验证失败后又改其他手机号注册 向redis里存入验证次数
                 await UserInfoControllerHelper.SaveUserPreRegisterToRedis(openid, preRegisterAccount: sNewAccount, preRegisterTryTimes: "10");
 
-                return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.Success);
+                return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.Success);
             }
         }
 
@@ -163,19 +186,19 @@ namespace BK.WeChat.Controllers
             string password = Encryption.EncryptMD5(registerParam.password);
             string openid = registerParam.openID;
 
-            if(string.IsNullOrEmpty(sNewAccount) || string.IsNullOrEmpty(openid) || string.IsNullOrEmpty(validationCode) || password == Encryption.EncryptMD5(""))
+            if (string.IsNullOrEmpty(sNewAccount) || string.IsNullOrEmpty(openid) || string.IsNullOrEmpty(validationCode) || password == Encryption.EncryptMD5(""))
             {
                 return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.InvalidArguments);
             }
 
-            if(!sNewAccount.Contains("@"))
+            if (!sNewAccount.Contains("@"))
                 sNewAccount += "@phone.51science.cn";
 
-            using(UserRepository userRepository = new UserRepository())
+            using (UserRepository userRepository = new UserRepository())
             {
                 userinfo = await userRepository.GetUserInfoByAccount(sNewAccount);
             }
-            if(userinfo == null)
+            if (userinfo == null)
                 return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.NotFound);
             else
             {
@@ -187,15 +210,15 @@ namespace BK.WeChat.Controllers
                 int preRegisterTryTimes = 0;
                 int.TryParse(preRegisterRedis.PreRegisterTryTimes, out preRegisterTryTimes);
 
-                if(string.IsNullOrEmpty(preRegisterAccount) || sNewAccount != preRegisterAccount)
+                if (string.IsNullOrEmpty(preRegisterAccount) || sNewAccount != preRegisterAccount)
                 {
                     await UserInfoControllerHelper.SaveUserPreRegisterToRedis(openid, preRegisterValidationCode: "");
                     preRegisterValidationCode = "";
                 }
 
-                if(!string.IsNullOrEmpty(preRegisterValidationCode))
+                if (!string.IsNullOrEmpty(preRegisterValidationCode))
                 {
-                    if(preRegisterTryTimes > 0)
+                    if (preRegisterTryTimes > 0)
                     {
                         await UserInfoControllerHelper.SaveUserPreRegisterToRedis(openid, preRegisterTryTimes: (preRegisterTryTimes - 1).ToString());
                     }
@@ -205,7 +228,7 @@ namespace BK.WeChat.Controllers
                         return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.Forbidden);
                     }
 
-                    if(validationCode != preRegisterValidationCode)
+                    if (validationCode != preRegisterValidationCode)
                     {
                         return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.ErrorValidationCode);
                     }
@@ -215,14 +238,89 @@ namespace BK.WeChat.Controllers
                     return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.NoValidationCode);
                 }
                 bool result = false;
-                using(UserRepository userRepository = new UserRepository())
+                using (UserRepository userRepository = new UserRepository())
                 {
                     result = await userRepository.UpdateUserinfoPassword(sNewAccount, password);
                 }
-                if(result)
+                if (result)
                     return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.Success);
                 else
                     return WebApiHelper.HttpRMtoJson(registerParam.jsonpCallback, null, HttpStatusCode.OK, customStatus.Fail);
+            }
+        }
+
+        /// <summary>
+        /// 密码修改页初始化
+        /// post api/Login/ChangePasswordInit
+        /// </summary>
+        /// <param name="userlogin">{openid:}</param>
+        /// <returns>
+        /// InvalidArguments 参数不正确
+        /// Success 成功
+        /// NotFound 账号不存在
+        /// </returns>
+        [Route("api/Login/ChangePasswordInit")]
+        [UserBehaviorFilter]
+        public async Task<HttpResponseMessage> PostResetPasswordInit([FromBody]BaseParameter postParameter)
+        {
+            string openid = postParameter.openID;
+
+            if (string.IsNullOrEmpty(openid))
+            {
+                return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.InvalidArguments);
+            }
+
+            using (UserRepository userRepository = new UserRepository())
+            {
+                userinfo = await userRepository.GetUserInfoByOpenid(openid);
+                if (userinfo == null)
+                    return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.NotFound);
+                else
+                {
+                    if (userinfo.AccountEmail.Contains("@phone.51science.cn"))
+                        return WebApiHelper.HttpRMtoJson(userinfo.AccountEmail.Replace("@phone.51science.cn", ""), HttpStatusCode.OK, customStatus.Success);
+                    else
+                        return WebApiHelper.HttpRMtoJson(userinfo.AccountEmail, HttpStatusCode.OK, customStatus.Success);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 密码修改页
+        /// post api/Login/ChangePassword
+        /// </summary>
+        /// <param name="userlogin">{openid: old: new:}</param>
+        /// <returns>
+        /// InvalidArguments 参数不正确
+        /// Success 成功
+        /// Fail 旧密码不正确
+        /// NotFound 账号不存在
+        /// </returns>
+        [Route("api/Login/ChangePassword")]
+        [UserBehaviorFilter]
+        public async Task<HttpResponseMessage> PostResetPassword([FromBody]PasswordParameter postParameter)
+        {
+            string openid = postParameter.openID;
+            string old = postParameter.oldPassword;
+            string newp = postParameter.newPassword;
+
+            if (string.IsNullOrEmpty(openid)|| string.IsNullOrEmpty(old) || string.IsNullOrEmpty(newp))
+            {
+                return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.InvalidArguments);
+            }
+
+            using (UserRepository userRepository = new UserRepository())
+            {
+                userinfo = await userRepository.GetUserInfoByOpenid(openid);
+                if (userinfo == null)
+                    return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.NotFound);
+                else
+                {
+                    if (userinfo.AccountEmail.Contains("@phone.51science.cn"))
+                        return WebApiHelper.HttpRMtoJson(userinfo.AccountEmail.Replace("@phone.51science.cn", ""), HttpStatusCode.OK, customStatus.Success);
+                    else
+                        return WebApiHelper.HttpRMtoJson(userinfo.AccountEmail, HttpStatusCode.OK, customStatus.Success);
+                }
             }
         }
     }

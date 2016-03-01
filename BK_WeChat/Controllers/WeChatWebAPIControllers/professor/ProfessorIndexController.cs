@@ -43,7 +43,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.professor
 
             using (UserRepository userRepository = new UserRepository())
             {
-                userinfo = await userRepository.GetUserInfoByUuid(uuid);
+                userinfo = await userRepository.GetUserInfoByUuidAsync(uuid);
                 if (userinfo == null)
                 {
                     return WebApiHelper.HttpRMtoJson(postParameter.jsonpCallback, null, HttpStatusCode.OK, customStatus.NotFound);
@@ -93,7 +93,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.professor
                 }
                 else
                 {
-                    UserInfo userinfo = await userRepository.GetUserInfoByUuid(userUuid);
+                    UserInfo userinfo = await userRepository.GetUserInfoByUuidAsync(userUuid);
                     //研究兴趣
                     string Interests = userinfo.Interests;
 

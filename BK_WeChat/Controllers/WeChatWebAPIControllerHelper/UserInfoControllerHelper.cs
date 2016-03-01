@@ -29,7 +29,8 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllerHelper
 
         public static async Task<bool> SaveUserInfo(ComplementParameter complementParameter, pre_register preRegister)
         {
-            bool result = false;
+            bool saveresult = false;
+            bool createresult = false;
             UserInfoRedis userinfoRedis = await GetUserInfoRedisByOpenid(complementParameter.openID);
             UserInfo userinfo = null;
             using (UserRepository userRepository = new UserRepository())
@@ -47,6 +48,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllerHelper
                         Phone = preRegister.accountemail.Substring(0, 11),
                         IsBusiness = preRegister.validate
                     };
+                    createresult = true;
                 }
                 else
                 {
@@ -69,11 +71,12 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllerHelper
                 userinfo.HometownProvince = complementParameter.hometownProvince;
                 userinfo.HometownCity = complementParameter.hometownCity;
                 userinfo.Position = complementParameter.position;
-                result = await userRepository.SaveUserInfo(userinfo);
-                if (result)
+                saveresult = await userRepository.SaveUserInfo(userinfo);
+
+                if (saveresult & createresult)
                     await userRepository.SaveUserOpenid(userinfo.uuid, userinfoRedis.Openid, userinfoRedis.Unionid);
             }
-            return result;
+            return saveresult;
         }
         public static async Task<bool> CheckUserInfoPhoto(UserInfo userinfo, UserInfoRedis userinfoRedis)
         {

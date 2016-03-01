@@ -332,7 +332,7 @@ namespace BK.CommonLib.ElasticSearch
                 UserInfo userinfo = null; List<UserEducation> eduList = null;
                 using (UserRepository repo = new UserRepository())
                 {
-                    userinfo = await repo.GetUserInfoByUuid(uuid);
+                    userinfo = await repo.GetUserInfoByUuidAsync(uuid);
                     eduList = await repo.GetUserRecordsByUuid<UserEducation>(userinfo.uuid);
                 }
 
@@ -477,7 +477,7 @@ namespace BK.CommonLib.ElasticSearch
             List<string> ret = null;
             using (UserRepository repo = new UserRepository())
             {
-                var userinfo = await repo.GetUserInfoByUuid(uuid);
+                var userinfo = await repo.GetUserInfoByUuidAsync(uuid);
                 eduList = await repo.GetUserRecordsByUuid<UserEducation>(userinfo.uuid);
             }
             if(eduList!=null)

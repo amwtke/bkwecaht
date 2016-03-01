@@ -44,7 +44,7 @@ namespace BK.WeChat.Controllers
 
             using(UserRepository userRepository = new UserRepository())
             {
-                userinfo = await userRepository.GetUserInfoByUuid(uuid);
+                userinfo = await userRepository.GetUserInfoByUuidAsync(uuid);
                 if(userinfo == null)
                 {
                     return WebApiHelper.HttpRMtoJson(postParameter.jsonpCallback, null, HttpStatusCode.OK, customStatus.NotFound);
@@ -407,7 +407,7 @@ namespace BK.WeChat.Controllers
 
             using (UserRepository userRepository = new UserRepository())
             {
-                var userinfo = await userRepository.GetUserInfoByUuid(uuid);
+                var userinfo = await userRepository.GetUserInfoByUuidAsync(uuid);
                 return WebApiHelper.HttpRMtoJson(postParameter.jsonpCallback, userinfo, HttpStatusCode.OK, customStatus.Success);
             }
         }

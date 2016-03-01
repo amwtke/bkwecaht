@@ -36,8 +36,8 @@ namespace BK.WeChat.Controllers
 
             using(UserRepository userRepository = new UserRepository())
             {
-                var from = userRepository.GetUserInfoByUuid(openid);
-                var to = userRepository.GetUserInfoByUuid(uuid);
+                var from = userRepository.GetUserInfoByUuidAsync(openid);
+                var to = userRepository.GetUserInfoByUuidAsync(uuid);
                 if(await from == null || await to == null)
                     return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.Fail);
                 var result = await WeChatSendMQHelper.SendMessage(openid.ToString().ToUpper(), uuid.ToString().ToUpper(), textMsg);

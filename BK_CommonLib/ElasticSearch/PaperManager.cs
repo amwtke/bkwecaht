@@ -148,16 +148,40 @@ namespace BK.CommonLib.ElasticSearch
 
         public static async Task<List<PapersIndex>> GetPapersAsync(List<Guid> users)
         {
-            if(users!=null && users.Count()>0)
+            if (users != null && users.Count() > 0)
             {
                 List<PapersIndex> ret = new List<PapersIndex>();
-                foreach(var v in users)
+                foreach (var v in users)
                 {
                     var tmp = await GetByUserUuid(v);
                     if (tmp != null && tmp.Count() > 0)
                         ret.AddRange(tmp);
                 }
                 return ret;
+            }
+            return null;
+        }
+        public static async Task<List<PapersIndex>> GetPapersAsync(long researchFieldId, int pageIndex, int pageSize)
+        {
+            try
+            {
+                var result = await _client.SearchAsync<PapersIndex>(s => s.Filter(f => f.Term("ResearchFieldId", researchFieldId))
+                                                                            .SortDescending("PublishTime")
+                                                                            .Skip(pageIndex * pageSize).Take(pageSize));
+
+                if (result != null && result.Total > 0)
+                {
+                    List<PapersIndex> ret = new List<PapersIndex>();
+                    foreach (var v in result.Documents)
+                    {
+                        ret.Add(v);
+                    }
+                    return ret;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
             }
             return null;
         }
@@ -188,10 +212,10 @@ namespace BK.CommonLib.ElasticSearch
             {
                 var result = await _client.SearchAsync<PapersIndex>(s => s.Query(q => q.QueryString(ss => ss.Query("AccountEmail_uuid:" + uuidStr))).SortDescending("PublishTime"));
 
-                if (result != null && result.Total >0)
+                if (result != null && result.Total > 0)
                 {
                     List<PapersIndex> ret = new List<PapersIndex>();
-                    foreach(var v in result.Documents)
+                    foreach (var v in result.Documents)
                     {
                         ret.Add(v);
                     }
@@ -217,10 +241,15 @@ namespace BK.CommonLib.ElasticSearch
                 index.ArticlePath = obj.ArticlePath;
                 index.Author = obj.Author;
                 index.PostMagazine = obj.PostMagazine != null ? obj.PostMagazine : "";
-                if(obj.PublishTime!=null)
+                if (obj.PublishTime != null)
                     index.PublishTime = CommonHelper.ToUnixTime(obj.PublishTime.Value);
                 index.Title = obj.Title;
                 index.KeyWords = index.Author.ToLower() + " " + index.PostMagazine.ToLower() + " " + index.Title.ToLower();
+                using (DB.Repositorys.UserRepository repo = new DB.Repositorys.UserRepository())
+                {
+                    index.ResearchFieldId = (repo.GetUserInfoByUuid(obj.AccountEmail_uuid))?.ResearchFieldId ?? 0;
+                }
+
             }
             return index;
         }
@@ -355,7 +384,7 @@ namespace BK.CommonLib.ElasticSearch
         //            var result = await _client.SearchAsync<PapersIndex>(s => s.Index(_config.IndexName).Query(q=>q.Term("KeyWords",queryStr)).AnalyzeWildcard(true).Analyzer("ik_smart").Skip(from).Take(size));
         //            ret = result.Documents.ToList();
         //            return ret;
-                
+
         //    }
         //    catch (Exception ex)
         //    {

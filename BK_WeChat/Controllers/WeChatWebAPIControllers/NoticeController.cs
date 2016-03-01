@@ -52,7 +52,7 @@ namespace BK.WeChat.Controllers
                 double unreadNum = await NoticeRedisOp.GetUnreadScore(uuid);
                 var latestNotice = await WeChatNoticeReceiveHelper.GetFirstNoticeFromRedis(uuid);
                 if(latestNotice != null)
-                    latestNotice.RelationObj = await userRepository.GetUserInfoByUuid(latestNotice.RelationID_uuid);
+                    latestNotice.RelationObj = await userRepository.GetUserInfoByUuidAsync(latestNotice.RelationID_uuid);
                 return WebApiHelper.HttpRMtoJson(Tuple.Create(unreadNum, latestNotice), HttpStatusCode.OK, customStatus.Success);
             }
         }
@@ -91,7 +91,7 @@ namespace BK.WeChat.Controllers
                     foreach(var n in noticeList)
                     {
                         if(n != null)
-                            n.RelationObj = await userRepository.GetUserInfoByUuid(n.RelationID_uuid);
+                            n.RelationObj = await userRepository.GetUserInfoByUuidAsync(n.RelationID_uuid);
                     }
 
                 return WebApiHelper.HttpRMtoJson(Tuple.Create(user, noticeList), HttpStatusCode.OK, customStatus.Success);

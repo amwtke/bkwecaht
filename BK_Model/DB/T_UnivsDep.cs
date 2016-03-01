@@ -8,7 +8,7 @@ namespace BK.Model.DB
     {
         [Key]
         public int ID { get; set; }
-        public string UnivsID { get; set; }
+        public int UnivsID { get; set; }
         public string DepName { get; set; }
         public string Alias { get; set; }
     }

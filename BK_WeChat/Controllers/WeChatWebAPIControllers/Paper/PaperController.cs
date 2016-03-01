@@ -182,7 +182,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Paper
         }
 
         /// <summary>
-        /// 一次翻pagesize个人的论文。
+        /// 一次翻pagesize个论文。
         /// </summary>
         /// <param name="postParameter"></param>
         /// <returns></returns>
@@ -197,42 +197,19 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Paper
             {
                 return WebApiHelper.HttpRMtoJson(postParameter.jsonpCallback, null, HttpStatusCode.OK, customStatus.InvalidArguments);
             }
-
-            #region 先获取此人相关的教授信息。应该跟“找教授”页面一致
+            
             if (string.IsNullOrEmpty(openid))
             {
                 return WebApiHelper.HttpRMtoJson(postParameter.jsonpCallback, null, HttpStatusCode.OK, customStatus.InvalidArguments);
             }
-            //获取用户uuid 学校与院系与专业信息。
-            Guid useruuid; string xuexiaoname, yuanxiname; long? rf;
             using (UserRepository userRepository = new UserRepository())
             {
                 var userinfo = await userRepository.GetUserInfoByOpenid(openid);
-                useruuid = userinfo.uuid;
-                xuexiaoname = userinfo.Unit;
-                yuanxiname = userinfo.Faculty;
-                rf = userinfo.ResearchFieldId;
+                //获取用户uuid 学校与院系与专业信息。
+                Guid useruuid = userinfo.uuid;
+                long rf = userinfo.ResearchFieldId ?? 0;
 
-                if (string.IsNullOrEmpty(xuexiaoname) || string.IsNullOrEmpty(yuanxiname))
-                    return WebApiHelper.HttpRMtoJson(postParameter.jsonpCallback, "学校，院系有个为空！", HttpStatusCode.OK, customStatus.InvalidArguments);
-
-                //获取score
-                double univScore, depScore;
-                FindHelper.GetUnivDeptScore(xuexiaoname, yuanxiname, out univScore, out depScore);
-
-                //拿到三个集合
-                double rfScore = Convert.ToDouble(rf.Value);
-                var set = await FindHelper.GetThreeSet(true, univScore, depScore, rfScore);
-
-                var retUuid = FindHelper.FindProfessorRule(useruuid,set.Item1, set.Item2, set.Item3, postParameter.pageIndex, postParameter.pageSize);
-
-                List<Guid> ret = new List<Guid>();
-                foreach (var s in retUuid)
-                {
-                    ret.Add(Guid.Parse(s));
-                }
-                #endregion
-                var list = await PaperManager.GetPapersAsync(ret);
+                var list = await PaperManager.GetPapersAsync(rf, pageIndex, pageSize);
 
                 List<Tuple<PapersIndex, string, string, bool,string>> retList = new List<Tuple<PapersIndex, string, string, bool,string>>();
                 if (list!=null && list.Count()>0)
@@ -242,7 +219,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Paper
                         foreach (var paperindex in list)
                         {
                             //获取userinfo
-                            var uinfo = await repo.GetUserInfoByUuid(Guid.Parse(paperindex.AccountEmail_uuid));
+                            var uinfo = await repo.GetUserInfoByUuidAsync(Guid.Parse(paperindex.AccountEmail_uuid));
                             //获取是否赞
                             var redis = new RedisManager2<WeChatRedisConfig>();
                             double score = await redis.GetScoreEveryKeyAsync<PaperRedis, PZanPeopleZsetAttribute>(paperindex.Id, useruuid.ToString());
@@ -329,7 +306,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Paper
                 {
                     foreach (var v in zans)
                     {
-                        UserInfo tmp = await userR.GetUserInfoByUuid(Guid.Parse(v.Key));
+                        UserInfo tmp = await userR.GetUserInfoByUuidAsync(Guid.Parse(v.Key));
                         ret.Add(tmp);
                     }
                 }
@@ -366,7 +343,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Paper
                 {
                     foreach (var v in zans)
                     {
-                        UserInfo tmp = await userR.GetUserInfoByUuid(Guid.Parse(v.Key));
+                        UserInfo tmp = await userR.GetUserInfoByUuidAsync(Guid.Parse(v.Key));
                         ret.Add(tmp);
                     }
                 }
@@ -443,7 +420,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Paper
                     foreach (var paperindex in ret)
                     {
                         //获取userinfo
-                        var uinfo = await repo.GetUserInfoByUuid(Guid.Parse(paperindex.AccountEmail_uuid));
+                        var uinfo = await repo.GetUserInfoByUuidAsync(Guid.Parse(paperindex.AccountEmail_uuid));
                         //获取是否赞
                         var redis = new RedisManager2<WeChatRedisConfig>();
                         double score = await redis.GetScoreEveryKeyAsync<PaperRedis, PZanPeopleZsetAttribute>(paperindex.Id, myUUID.ToString());

@@ -55,7 +55,7 @@ namespace BK.WeChat.Controllers
                     Guid userGUID;
                     if(!Guid.TryParse(userUuid, out userGUID) || userGUID.Equals(Guid.Empty))
                         continue;
-                    UserInfo toUser = await userRepository.GetUserInfoByUuid(userGUID);
+                    UserInfo toUser = await userRepository.GetUserInfoByUuidAsync(userGUID);
 
                     var latestMessage = await WeChatReceiveHelper.GetFirstMessagesFromRedis(uuid.ToString().ToUpper(), userUuid.ToUpper());
                     ChatCenterList.Add(Tuple.Create(unreadNum, toUser, latestMessage));
@@ -90,7 +90,7 @@ namespace BK.WeChat.Controllers
             using(UserRepository userRepository = new UserRepository())
             {
                 var user = await userRepository.GetUserInfoByOpenid(openid);
-                var touser = await userRepository.GetUserInfoByUuid(uuid);
+                var touser = await userRepository.GetUserInfoByUuidAsync(uuid);
                 if(user == null || touser == null)
                 {
                     return WebApiHelper.HttpRMtoJson(null, HttpStatusCode.OK, customStatus.NotFound);

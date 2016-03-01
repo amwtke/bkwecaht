@@ -121,6 +121,12 @@ namespace BK.CommonLib.ElasticSearch
                         };
                         u.Doc(l);
                         u.Index(_config.IndexName);
+
+                        BKLogger.LogInfoAsync(typeof(ComplexLocationManager), "更新位置复杂信息："
+                            + id
+                            + isBusiness
+                            + gender
+                            + researchfieldId);
                         return u;
                     });
                     return r.IsValid;
@@ -136,14 +142,17 @@ namespace BK.CommonLib.ElasticSearch
         {
             var result = _client.Search<ComplexLocation>(s => s.Query(q => q.QueryString(ss => ss.Query("Id:" + id))));
             ComplexLocation l = null;
-            if(result.Total >= 1)
+            if (result.Total >= 1)
             {
-                string _id = result.Hits.First().Id;
+                string _id = result.Documents.First().Id;
                 var r = _client.Update<ComplexLocation>((u) =>
                 {
                     u.Id(_id);
-                    l = new ComplexLocation() { Id = id, Coordinate = new ComplexLocationCoordinate() { Lat = lat, Lon = lon }, TimeStamp = DateTime.Now.ToString() };
-                    u.Doc(l);
+                    result.Documents.First().Coordinate = new ComplexLocationCoordinate() { Lat = lat, Lon = lon };
+                    result.Documents.First().TimeStamp = DateTime.Now.ToString();
+                    //l = new ComplexLocation() { Id = id, Coordinate = new ComplexLocationCoordinate() { Lat = lat, Lon = lon }, TimeStamp = DateTime.Now.ToString() };
+                    //u.Doc(l);
+                    u.Doc(result.Documents.First());
                     u.Index(_config.IndexName);
                     return u;
                 });

@@ -52,11 +52,28 @@ namespace BK.CommonLib.Util
             Hashtable ht = new Hashtable();
             ht["%code%"] = sValidString;
 
-            SC.SendCloud sc = new SC.SendCloud();
+            SC.SendCloud sc = new SC.SendCloud(SC.SendCloudTemplate.SMS_Register);
             sc.To = sTo;
             sc.listVar = new List<Hashtable>() { ht };
 
             bool result = SC.SendCloud.SendSMS(sc);
+
+            return result;
+        }
+
+        public static bool SendValidStringEmail(string validationCode, string sNewAccount,string name)
+        {
+            Hashtable ht = new Hashtable();
+
+            ht["to"] = sNewAccount;
+            ht["%code%"] = validationCode;
+            ht["%name%"] = name;
+
+            SC.SendCloud sc = new SC.SendCloud(SC.SendCloudTemplate.Email_Svr_ResetPassword);
+
+            sc.listVar = new List<Hashtable>() { ht };
+
+            bool result = SC.SendCloud.SendEmail(sc);
 
             return result;
         }
@@ -102,7 +119,6 @@ namespace BK.CommonLib.Util
         {
             return GetEKArticlePicUrl("") + eki.HeadPic;
         }
-
     }
 
     public enum customStatus

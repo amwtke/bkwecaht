@@ -49,7 +49,8 @@ namespace BK_WeChat.CommonService.CustomMessageHandler
             //更多有关第三方开放平台（Senparc.Weixin.Open）的内容，请回复文字：open
             //",
             //                version);
-            return "欢迎关注【大学问网公众号】";
+            return "您好，欢迎关注大学问网面向科研人员推出的微信服务号！快速获取最新研究进展，及时了解业内动态，提供业内专家采访和行业资讯，随时与业内大牛分享交流。\n"+
+                "<a href=\"https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9a12c27c0a4a3d3c&redirect_uri=http%3a%2f%2fwechat.51science.cn%2fwxcallback&response_type=code&scope=snsapi_userinfo&state=bktest#wechat_redirect\" >立即登录</a>" + "[微笑]";
         }
 
         public override IResponseMessageBase OnTextOrEventRequest(RequestMessageText requestMessage)
@@ -226,18 +227,19 @@ namespace BK_WeChat.CommonService.CustomMessageHandler
         {
             bool updateOK = ComplexLocationManager.AddOrUpdateLocation(requestMessage.FromUserName, requestMessage.Latitude, requestMessage.Longitude);
 
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("每次打开微信都会上报位置信息。您的位置是：");
-            sb.AppendLine(string.Format("经度{0},维度{1},精度{2}", requestMessage.Longitude.ToString(), requestMessage.Latitude.ToString(), requestMessage.Precision.ToString()));
-            sb.AppendLine("OpenId:" + requestMessage.FromUserName);
-            sb.AppendLine("Update:" + updateOK.ToString());
-            //这里是微信客户端（通过微信服务器）自动发送过来的位置信息
-            var responseMessage = CreateResponseMessage<ResponseMessageText>();
-            responseMessage.Content = sb.ToString();
+            //StringBuilder sb = new StringBuilder();
+            //sb.AppendLine("每次打开微信都会上报位置信息。您的位置是：");
+            //sb.AppendLine(
+            //    $"经度{requestMessage.Longitude.ToString()},维度{requestMessage.Latitude.ToString()},精度{requestMessage.Precision.ToString()}");
+            //sb.AppendLine("OpenId:" + requestMessage.FromUserName);
+            //sb.AppendLine("Update:" + updateOK.ToString());
+            //////这里是微信客户端（通过微信服务器）自动发送过来的位置信息
+            ////var responseMessage = CreateResponseMessage<ResponseMessageText>();
+            ////responseMessage.Content = sb.ToString();
 
-            //更新Es库
-            
-            return responseMessage;//这里也可以返回null（需要注意写日志时候null的问题）
+            ////log
+            //BKLogger.LogInfoAsync(typeof(CustomMessageHandler),sb.ToString());
+            return null;//responseMessage;//这里也可以返回null（需要注意写日志时候null的问题）
         }
 
         public override IResponseMessageBase OnEvent_ScanRequest(RequestMessageEvent_Scan requestMessage)
@@ -270,7 +272,7 @@ namespace BK_WeChat.CommonService.CustomMessageHandler
         public override IResponseMessageBase OnEvent_SubscribeRequest(RequestMessageEvent_Subscribe requestMessage)
         {
             var responseMessage = ResponseMessageBase.CreateFromRequestMessage<ResponseMessageText>(requestMessage);
-            responseMessage.Content = GetWelcomeInfo();
+            responseMessage.Content = GetWelcomeInfo(); 
             if (!string.IsNullOrEmpty(requestMessage.EventKey))
             {
                 responseMessage.Content += "\r\n============\r\n场景值："+ requestMessage.EventKey;

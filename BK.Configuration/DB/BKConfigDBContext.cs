@@ -207,6 +207,17 @@ namespace BK.Configuration.DB
             qiniu.EKABUCKET = "bk-ektodaypic";
             qiniu.EKADOMAIN = "wechatektodaypic.51science.cn";
             DBinitialHelper.MakeList(qiniu, AppDomain).ForEach(c => context.BKConfigs.Add(c));
+
+
+            SendCloudConfig sc = new SendCloudConfig();
+            sc.EDM_API_User = "51science_Push";
+            sc.SVR_API_User = "51science_Service";
+            sc.API_Key = "jjomHhfTTntIHW4u";
+            sc.SMS_API_User = "51science_SMS_Push";
+            sc.SMS_API_Key = "LFd0nUg0CCg3Ma5sla7yc2HaVx2nNqOH";
+            sc.RegisterValidation_TempleteId = "298";
+            sc.ResetPasswordValidation_EmailTempleteId = "bk_ResetPasswordValidation";
+            DBinitialHelper.MakeList(sc, AppDomain).ForEach(c => context.BKConfigs.Add(c));
             #endregion
             context.SaveChanges();
         }

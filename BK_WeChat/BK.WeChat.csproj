@@ -216,6 +216,7 @@
     <Compile Include="Controllers\WeChatWebAPIParameters\LocationParameter.cs" />
     <Compile Include="Controllers\WeChatWebAPIParameters\ProfessorResearchFieldUpdateParameter.cs" />
     <Compile Include="Controllers\WeChatWebAPIParameters\ProfessorSearchParameter.cs" />
+    <Compile Include="Controllers\WeChatWebAPIParameters\PasswordParameter.cs" />
     <Compile Include="Controllers\WeChatWebAPIParameters\UserRecordsParameter.cs" />
     <Compile Include="Controllers\WeChatWebAPIParameters\DualParameter.cs" />
     <Compile Include="Controllers\WeChatWebAPIParameters\RegisterParameter.cs" />

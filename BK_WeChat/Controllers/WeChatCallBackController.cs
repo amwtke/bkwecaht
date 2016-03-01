@@ -22,7 +22,7 @@ namespace BK.WeChat.Controllers
         // GET: WeChatCallBack
         public async System.Threading.Tasks.Task<ActionResult> Index(string code, string state)
         {
-            return await LoginCallBack(code, state, @"F2E/wechat/xuesheng_my.html", @"F2E/wechat/jiaoshou_my.html");
+            return await LoginCallBack(code, state, @"F2E/wechat/xuesheng_findds.html", @"F2E/wechat/dynamic_list.html");
         }
     }
 }

@@ -23,16 +23,30 @@ namespace BK.CommonLib.SC
         public string To;
         public string Label;
 
-        public SendCloud()
+        public SendCloud(SendCloudTemplate sct)
         {
             Model.Configuration.PaaS.SendCloudConfig config = BK.Configuration.BK_ConfigurationManager.GetConfig<Model.Configuration.PaaS.SendCloudConfig>();
             if(config == null)
                 WebApiHelper.HttpRMtoJson(null, System.Net.HttpStatusCode.OK, customStatus.Fail);
             else
             {
-                API_User = config.SMS_API_User;
-                API_Key = config.SMS_API_Key;
-                Template = config.RegisterValidation_TempleteId;
+                From = "no-reply@51science.cn";
+                FromName = "大学问网";
+                switch (sct)
+                {
+                    case SendCloudTemplate.SMS_Register:
+                        API_User = config.SMS_API_User;
+                        API_Key = config.SMS_API_Key;
+                        Template = config.RegisterValidation_TempleteId;
+                        break;
+                    case SendCloudTemplate.Email_Svr_ResetPassword:
+                        API_User = config.SVR_API_User;
+                        API_Key = config.API_Key;
+                        Template = config.ResetPasswordValidation_EmailTempleteId;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -93,9 +107,9 @@ namespace BK.CommonLib.SC
             return sb.ToString();
         }
 
-        public static string SendEmail(SendCloud sc)
+        public static bool SendEmail(SendCloud sc)
         {
-            string result = "";
+            bool result = false;
             int iPageSize = 100;
             int iPageCount = sc.listVar.Count / iPageSize + (sc.listVar.Count % iPageSize == 0 ? 0 : 1);
             for (int i = 0; i < iPageCount; i++)
@@ -120,32 +134,20 @@ namespace BK.CommonLib.SC
                     multipartEntity.AddBody(new StringBody(Encoding.UTF8, "label", sc.Label));
                     multipartEntity.AddBody(new StringBody(Encoding.UTF8, "substitution_vars", sVar));
 
-                    //for (int i = 0; i < sc.listFileName.Count; i++)
-                    //{
-                    //    FileInfo fileInfo = new FileInfo(sc.listFileName[i]);
-                    //    FileBody fileBody = new FileBody("file" + (i + 1), fileInfo.Name, fileInfo);
-                    //    multipartEntity.AddBody(fileBody);
-                    //}
-
                     HttpResponse response = client.Execute(postMethod);
-
-                    //Console.WriteLine("Response Code: " + response.ResponseCode);
-                    //Console.WriteLine("Response Content: " + EntityUtils.ToString(response.Entity));
-
-                    //Console.ReadLine();
-
-                    result += sVar + Environment.NewLine;
+                    //result += sVar + Environment.NewLine;
 
                     if (response.ResponseCode == 200)
-                    {
-                        result += EntityUtils.ToString(response.Entity) + Environment.NewLine + "==============" + Environment.NewLine;
-                    }
-                    else
-                        result += response.ResponseCode.ToString() + Environment.NewLine + "==============" + Environment.NewLine;
+                        result = true;
+                    //{
+                    //    result += EntityUtils.ToString(response.Entity) + Environment.NewLine + "==============" + Environment.NewLine;
+                    //}
+                    //else
+                    //    result += response.ResponseCode.ToString() + Environment.NewLine + "==============" + Environment.NewLine;
                 }
                 catch (Exception ex)
                 {
-                    return ex.ToString();
+                    //return ex.ToString();
                 }
             }
             return result;
@@ -228,5 +230,10 @@ namespace BK.CommonLib.SC
             }
         }
 
+    }
+    public enum SendCloudTemplate
+    {
+        SMS_Register,
+        Email_Svr_ResetPassword
     }
 }

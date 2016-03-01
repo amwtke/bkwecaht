@@ -62,7 +62,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Find
                         foreach (var v in list)
                         {
                             Guid uuid = Guid.Parse(v.Id);
-                            var tempUserinfo = await repo.GetUserInfoByUuid(uuid);
+                            var tempUserinfo = await repo.GetUserInfoByUuidAsync(uuid);
                             string three = !string.IsNullOrEmpty(v.Diwei) ? v.Diwei.Trim() : "";
                             bool isXY = ProfessorManager.IsXiaoYou(eduList, v.Education);
                             ret.Add(Tuple.Create(tempUserinfo, three, isXY));
@@ -109,7 +109,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Find
                 List<UserInfo> ret = new List<UserInfo>();
                 foreach (var s in retUuid)
                 {
-                    var v = await userRepository.GetUserInfoByUuid(Guid.Parse(s));
+                    var v = await userRepository.GetUserInfoByUuidAsync(Guid.Parse(s));
 
                     if (v != null)
                         ret.Add(v);
@@ -165,7 +165,7 @@ namespace BK.WeChat.Controllers.WeChatWebAPIControllers.Find
                         foreach (var v in list)
                         {
                             Guid uuid = Guid.Parse(v.Id);
-                            var tempUserinfo = await repo.GetUserInfoByUuid(uuid);
+                            var tempUserinfo = await repo.GetUserInfoByUuidAsync(uuid);
                             string three = !string.IsNullOrEmpty(v.Diwei) ? v.Diwei.Trim() : "";
                             bool isXY = ProfessorManager.IsXiaoYou(eduList, v.Education);
                             ret.Add(Tuple.Create(tempUserinfo, three, isXY));

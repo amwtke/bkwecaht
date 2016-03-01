@@ -54,7 +54,7 @@ namespace BK.CommonLib.DB.Repositorys
         //TODO 数据库层的cache用cacheLRU来做
         static ConcurrentDictionary<Guid, UserInfo> _userinfoCache = new ConcurrentDictionary<Guid, UserInfo>();
 
-        public async Task<UserInfo> GetUserInfoByUuid(Guid uuid)
+        public async Task<UserInfo> GetUserInfoByUuidAsync(Guid uuid)
         {
             UserInfo u = null;
             if(_userinfoCache.TryGetValue(uuid, out u))
@@ -63,6 +63,18 @@ namespace BK.CommonLib.DB.Repositorys
             if (u == null)
                 return u;
             await context.Entry(u).Reference(r => r.ResearchField).LoadAsync();
+            _userinfoCache[uuid] = u;
+            return u;
+        }
+        public UserInfo GetUserInfoByUuid(Guid uuid)
+        {
+            UserInfo u = null;
+            if (_userinfoCache.TryGetValue(uuid, out u))
+                return u;
+            u = context.UserInfo.Find(uuid);
+            if (u == null)
+                return u;
+            context.Entry(u).Reference(r => r.ResearchField).Load();
             _userinfoCache[uuid] = u;
             return u;
         }
@@ -105,7 +117,7 @@ namespace BK.CommonLib.DB.Repositorys
         {
             //从缓存中读取
             Guid uuid = await GetUserUuidByOpenid(wechat_openid);
-            UserInfo u = await GetUserInfoByUuid(uuid);
+            UserInfo u = await GetUserInfoByUuidAsync(uuid);
             if(u != null)
                 return u;
 
@@ -131,17 +143,24 @@ namespace BK.CommonLib.DB.Repositorys
             else
             {
                 userinfo.Password = password;
-                if(await context.SaveChangesAsync() > 0)
+                try
+                {
+                    //存入数据库
+                    await context.SaveChangesAsync();
                     return true;
-                else
+                }
+                catch (Exception ex)
+                {
+                    BK.CommonLib.Log.LogHelper.LogErrorAsync(typeof(UserRepository), ex);
                     return false;
+                }
             }
         }
 
         public async Task<bool> SaveUserInfo(UserInfo userinfo)
         {
             //新加入
-            if(userinfo.uuid == Guid.Empty || GetUserInfoByUuid(userinfo.uuid) == null)
+            if(userinfo.uuid == Guid.Empty || GetUserInfoByUuidAsync(userinfo.uuid) == null)
             {
                 userinfo.uuid = Guid.NewGuid();
                 context.UserInfo.Add(userinfo);

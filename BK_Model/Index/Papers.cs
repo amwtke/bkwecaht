@@ -34,5 +34,8 @@ namespace BK.Model.Index
 
         [ElasticProperty(Index = FieldIndexOption.Analyzed, Name = "KeyWords", Type = FieldType.String, Analyzer = "ik", IndexAnalyzer = "ik_max_word", SearchAnalyzer = "ik_smart")]
         public string KeyWords { get; set; }
+
+        [ElasticProperty(Index = FieldIndexOption.NotAnalyzed, Name = "ResearchFieldId", Type = FieldType.Long)]
+        public long ResearchFieldId { get; set; }
     }
 }
